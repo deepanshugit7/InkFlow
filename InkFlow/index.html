@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InkFlow — Real-Time Markdown Editor</title>
+    <meta name="description" content="A feature-rich, real-time Markdown editor with tabs, themes, command palette, find & replace, export, and more. Zero frameworks.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+</head>
+<body>
+    <!-- ===== Navbar ===== -->
+    <header class="navbar" id="navbar">
+        <div class="navbar-left">
+            <a href="#" class="brand">
+                <svg class="brand-icon" width="24" height="24" viewBox="0 0 32 32" fill="none">
+                    <defs><linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fa5320"/><stop offset="100%" stop-color="#ff8c42"/></linearGradient></defs>
+                    <rect width="32" height="32" rx="7" fill="url(#logoGrad)"/>
+                    <path d="M7 22V10l5 5 5-5v12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <path d="M23 10v12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+                    <path d="M23 10l-3 3" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+                    <path d="M23 10l3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/>
+                </svg>
+                <span class="brand-text"><span class="brand-ink">Ink</span>Flow</span>
+            </a>
+            <!-- Document Tabs -->
+            <div class="doc-tabs" id="docTabs"></div>
+            <button class="tab-add" id="tabAdd" title="New document">+</button>
+        </div>
+        <div class="navbar-right">
+            <div class="stats" id="statsBar">
+                <span id="wordCount">0 words</span><span class="stats-sep">·</span>
+                <span id="charCount">0 chars</span><span class="stats-sep">·</span>
+                <span id="readTime">1 min</span>
+            </div>
+            <!-- Word Goal -->
+            <div class="word-goal" id="wordGoalWrap" title="Click to set word goal">
+                <div class="goal-bar"><div class="goal-fill" id="goalFill"></div></div>
+                <span class="goal-text" id="goalText"></span>
+            </div>
+            <button class="btn-ghost" id="btnTheme" title="Cycle theme">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2m-8-10H2m20 0h-2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>
+            </button>
+            <!-- Export Dropdown -->
+            <div class="download-dropdown" id="downloadDropdown">
+                <button class="btn-secondary btn-sm" id="btnExportToggle">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Export <svg class="chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <button class="dropdown-item" id="dlPdf"><span class="di-icon" style="color:#ef4444">PDF</span><span>PDF Document</span><span class="di-ext">.pdf</span></button>
+                    <button class="dropdown-item" id="dlImage"><span class="di-icon" style="color:#0f8df4">IMG</span><span>PNG Image</span><span class="di-ext">.png</span></button>
+                    <button class="dropdown-item" id="dlWord"><span class="di-icon" style="color:#2563eb">DOC</span><span>Word Document</span><span class="di-ext">.doc</span></button>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item" id="dlMarkdown"><span class="di-icon" style="color:#fa5320">MD</span><span>Markdown</span><span class="di-ext">.md</span></button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== Toolbar ===== -->
+    <div class="toolbar" id="toolbar">
+        <div class="toolbar-inner">
+            <div class="tg"><button class="tb" data-action="h1">H1</button><button class="tb" data-action="h2">H2</button><button class="tb" data-action="h3">H3</button></div><span class="ts"></span>
+            <div class="tg">
+                <button class="tb" data-action="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+                <button class="tb" data-action="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+                <button class="tb" data-action="strikethrough" title="Strikethrough"><s>S</s></button>
+            </div><span class="ts"></span>
+            <div class="tg">
+                <button class="tb" data-action="code" title="Code">&lt;/&gt;</button>
+                <button class="tb" data-action="codeblock" title="Code Block">{ }</button>
+                <button class="tb" data-action="blockquote" title="Quote">"</button>
+            </div><span class="ts"></span>
+            <div class="tg">
+                <button class="tb" data-action="ul" title="Bullet List">•</button>
+                <button class="tb" data-action="ol" title="Numbered List">1.</button>
+                <button class="tb" data-action="checklist" title="Task List">☑</button>
+            </div><span class="ts"></span>
+            <div class="tg">
+                <button class="tb" data-action="link" title="Link (Ctrl+K)">🔗</button>
+                <button class="tb" data-action="image" title="Image">🖼</button>
+                <button class="tb" data-action="table" title="Table">▦</button>
+                <button class="tb" data-action="hr" title="Line">—</button>
+                <button class="tb" data-action="emoji" title="Emoji">😀</button>
+            </div>
+            <div class="tool-spacer"></div>
+            <!-- View modes -->
+            <div class="tg view-modes">
+                <button class="tb vm active" data-view="split" title="Split">◫</button>
+                <button class="tb vm" data-view="editor" title="Editor">▣</button>
+                <button class="tb vm" data-view="preview" title="Preview">◻</button>
+            </div><span class="ts"></span>
+            <!-- Font size -->
+            <div class="tg font-size-group">
+                <button class="tb" id="fontDec" title="Decrease font">A-</button>
+                <span class="font-size-label" id="fontLabel">14</span>
+                <button class="tb" id="fontInc" title="Increase font">A+</button>
+            </div><span class="ts"></span>
+            <div class="tg">
+                <button class="tb" id="btnFocus" title="Focus Mode">⊙</button>
+                <button class="tb" id="btnZen" title="Zen Mode">⛶</button>
+                <button class="tb" id="btnToc" title="Table of Contents">≡</button>
+                <button class="tb" id="btnFind" title="Find & Replace (Ctrl+F)">🔍</button>
+                <button class="tb" id="btnHistory" title="Version History">⟲</button>
+                <button class="tb" id="btnScrollSync" data-active="true" title="Scroll Sync">⇅</button>
+                <button class="tb" id="btnCopyMd" title="Copy">📋</button>
+                <button class="tb tb-danger" id="btnClear" title="Clear">🗑</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Find & Replace Bar ===== -->
+    <div class="find-bar" id="findBar">
+        <div class="find-row">
+            <input type="text" id="findInput" placeholder="Find..." spellcheck="false">
+            <span class="find-count" id="findCount">0 results</span>
+            <button class="fb" id="findPrev" title="Previous">▲</button>
+            <button class="fb" id="findNext" title="Next">▼</button>
+        </div>
+        <div class="find-row">
+            <input type="text" id="replaceInput" placeholder="Replace..." spellcheck="false">
+            <button class="fb" id="replaceOne">Replace</button>
+            <button class="fb" id="replaceAll">All</button>
+            <button class="fb" id="findClose">✕</button>
+        </div>
+    </div>
+
+    <!-- ===== Main Workspace ===== -->
+    <main class="workspace" id="workspace" data-view="split">
+        <!-- TOC Sidebar -->
+        <aside class="toc-sidebar" id="tocSidebar">
+            <div class="toc-header">Table of Contents</div>
+            <div class="toc-list" id="tocList"></div>
+        </aside>
+        <!-- Editor -->
+        <section class="pane pane-editor" id="editorPane">
+            <div class="pane-label"><span class="dot dot-orange"></span>MARKDOWN</div>
+            <div class="editor-wrap">
+                <div class="line-numbers" id="lineNumbers"></div>
+                <textarea id="editor" class="editor" placeholder="Start writing markdown... (or drop a .md file here)" spellcheck="false" autofocus></textarea>
+            </div>
+        </section>
+        <div class="gutter" id="gutter"><div class="gutter-line"></div></div>
+        <!-- Preview -->
+        <section class="pane pane-preview" id="previewPane">
+            <div class="pane-label"><span class="dot dot-green"></span>PREVIEW</div>
+            <article class="preview markdown-body" id="preview"></article>
+        </section>
+    </main>
+
+    <!-- ===== Command Palette (Ctrl+P) ===== -->
+    <div class="cmd-overlay" id="cmdOverlay">
+        <div class="cmd-palette">
+            <input type="text" class="cmd-input" id="cmdInput" placeholder="Type a command..." spellcheck="false" autocomplete="off">
+            <div class="cmd-list" id="cmdList"></div>
+        </div>
+    </div>
+
+    <!-- ===== Version History Modal ===== -->
+    <div class="modal-backdrop" id="historyBackdrop">
+        <div class="modal modal-wide">
+            <div class="modal-head"><h3>Version History</h3><button class="modal-x" id="historyClose">&times;</button></div>
+            <div class="modal-content" id="historyList"></div>
+        </div>
+    </div>
+
+    <!-- ===== Keyboard Shortcuts Modal ===== -->
+    <div class="modal-backdrop" id="shortcutsBackdrop">
+        <div class="modal">
+            <div class="modal-head"><h3>Keyboard Shortcuts</h3><button class="modal-x" id="shortcutsClose">&times;</button></div>
+            <div class="modal-content">
+                <div class="sc"><span class="keys"><kbd>Ctrl</kbd>+<kbd>P</kbd></span><span>Command Palette</span></div>
+                <div class="sc"><span class="keys"><kbd>Ctrl</kbd>+<kbd>B</kbd></span><span>Bold</span></div>
+                <div class="sc"><span class="keys"><kbd>Ctrl</kbd>+<kbd>I</kbd></span><span>Italic</span></div>
+                <div class="sc"><span class="keys"><kbd>Ctrl</kbd>+<kbd>K</kbd></span><span>Link</span></div>
+                <div class="sc"><span class="keys"><kbd>Ctrl</kbd>+<kbd>F</kbd></span><span>Find & Replace</span></div>
+                <div class="sc"><span class="keys"><kbd>Ctrl</kbd>+<kbd>S</kbd></span><span>Export .md</span></div>
+                <div class="sc"><span class="keys"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd></span><span>Code Block</span></div>
+                <div class="sc"><span class="keys"><kbd>Ctrl</kbd>+<kbd>/</kbd></span><span>Shortcuts</span></div>
+                <div class="sc"><span class="keys"><kbd>Esc</kbd></span><span>Exit Zen/Close modal</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emoji Picker -->
+    <div class="emoji-picker" id="emojiPicker">
+        <div class="emoji-grid" id="emojiGrid"></div>
+    </div>
+
+    <!-- Toast + Autosave -->
+    <div class="toast" id="toast"></div>
+    <div class="autosave" id="autosave"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Saved</div>
+
+    <!-- Drag & Drop overlay -->
+    <div class="drop-overlay" id="dropOverlay"><div class="drop-box"><span>📄</span><p>Drop .md file to open</p></div></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/parser.js"></script>
+    <script src="js/tabs.js"></script>
+    <script src="js/toolbar.js"></script>
+    <script src="js/find.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/history.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/commands.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
