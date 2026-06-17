@@ -1,4 +1,4 @@
-InkFlow — Real-Time Markdown Editor
+# ✍️ InkFlow — Real-Time Markdown Editor
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
@@ -7,6 +7,8 @@ InkFlow — Real-Time Markdown Editor
 I've always found Markdown editors to be either too minimal (plain textarea, nothing else) or way too bloated (Electron apps, gigantic dependencies, subscription paywalls). I wanted something in between — a proper editor that feels polished and fast, runs entirely in the browser, and doesn't need a single npm package to work.
 
 So I built InkFlow from scratch. It's a real-time Markdown editor with a live split-pane preview, a custom Markdown parser I wrote myself, multi-tab document support, a command palette, find & replace, version history, and four export formats. No frameworks. No build step. Just a browser tab.
+
+---
 
 ## What it does
 
@@ -56,14 +58,24 @@ Cycle through **Light**, **Dark**, and **Sepia** themes with the sun button in t
 ### 💾 Auto-Save
 Every change is saved to `localStorage` automatically. Close the tab, come back later — everything is exactly where you left it.
 
+---
+
 ## Running it locally
 
 Just open `index.html` in your browser. That's it.
 
 No `npm install`. No build tools. No server required (unlike ES Module projects, this one uses classic `<script>` tags so it works straight from the filesystem).
 
+```
+# Double-click index.html, or:
+# Drag index.html into any browser window
+```
+
+---
+
 ## Project structure
 
+```
 InkFlow/
 ├── index.html          # App shell — all the HTML markup and modal templates
 ├── style.css           # Full design system — light/dark/sepia themes, layout, components
@@ -79,8 +91,11 @@ InkFlow/
     ├── ui.js           # Focus mode, Zen mode, TOC, scroll sync, themes, stats
     ├── commands.js     # Command palette — fuzzy search over all app actions
     └── app.js          # Entry point — wires everything together, handles drag & drop
+```
 
 I kept each concern in its own file. The `parser.js` is probably the most interesting one — writing a Markdown parser from scratch meant handling edge cases that libraries abstract away, and it gave me a much deeper appreciation for how text rendering actually works.
+
+---
 
 ## Tech stack
 
@@ -92,6 +107,8 @@ I kept each concern in its own file. The `parser.js` is probably the most intere
 | html2canvas | The only external library — used for PNG export |
 | Inter + JetBrains Mono | Google Fonts — clean UI text and monospace code |
 | localStorage | Auto-save and settings persistence, no backend |
+
+---
 
 ## Keyboard shortcuts
 
@@ -108,6 +125,8 @@ I kept each concern in its own file. The `parser.js` is probably the most intere
 | `Esc` | Exit Zen / Close modal |
 | `Tab` | Indent (4 spaces) |
 
+---
+
 ## Things I might add later
 
 - Markdown file import via file picker (drag & drop works, button would be nice)
@@ -115,5 +134,7 @@ I kept each concern in its own file. The `parser.js` is probably the most intere
 - Word-wrap toggle
 - Vim keybindings mode
 - Collaborative editing (WebRTC or websockets)
+
+---
 
 *Built by Deepanshu — because writing tools should feel as good as what you write in them.*
