@@ -1,0 +1,1 @@
+console.log("InkFlow has been refactored into modular scripts in the 'js/' directory.");
